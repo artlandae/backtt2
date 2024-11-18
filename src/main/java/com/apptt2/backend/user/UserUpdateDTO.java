@@ -1,26 +1,13 @@
 package com.apptt2.backend.user;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import com.apptt2.backend.cat_role.CatRole;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
-import com.apptt2.backend.cat_role.CatRole;
-
-@Entity
-@Table(name = "users", schema = "protocolo")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class User {
-    @Id
-    private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "id_role")
-    private CatRole role;
-
+public class UserUpdateDTO {
+    private CatRole role;  // Se puede actualizar el rol
     private String emailAddress;
     private String password;
     private String name;
@@ -37,8 +24,5 @@ public class User {
     private String auxiliaryCellPhone;
     private String latitud;
     private String lenght;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private Date date;  // Se puede actualizar la fecha
 }
-
