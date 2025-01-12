@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface userRepository extends JpaRepository<User, Integer> {
     // Puedes agregar métodos personalizados aquí
-    @Query("SELECT u.name AS name, u.cellPhone AS cellPhone, u.auxiliaryCellPhone AS auxiliaryCellPhone FROM User u WHERE u.status = 'true'")
+    @Query("SELECT u.id AS id, u.name AS name, u.cellPhone AS cellPhone, u.auxiliaryCellPhone AS auxiliaryCellPhone FROM User u WHERE u.status = 'true'")
     List<UserStatus> findBystatus();
 
     @Query("SELECT u.id AS id, u.password AS password " +
