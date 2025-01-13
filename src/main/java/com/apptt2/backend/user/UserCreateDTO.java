@@ -1,26 +1,12 @@
 package com.apptt2.backend.user;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.util.Date;
 
-import com.apptt2.backend.cat_role.CatRole;
-
-@Entity
-@Table(name = "users", schema = "protocolo")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class User {
-    @Id
+public class UserCreateDTO {
     private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "id_role")
-    private CatRole role;
-
+    private int roleId;  // ID del rol para asignarlo en la relación
     private String emailAddress;
     private String password;
     private String name;
@@ -36,9 +22,6 @@ public class User {
     private String cellPhone;
     private String auxiliaryCellPhone;
     private String latitud;
-    private String lenght;
-
-    @Temporal(TemporalType.TIMESTAMP)
+    private String longitud;
     private Date date;
 }
-
