@@ -1,6 +1,8 @@
 package com.apptt2.backend.user;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +51,15 @@ public class userController {
     }
 
     @PutMapping("/updatepass/{id}")
-    public User updatePassUser(@PathVariable int id, @RequestBody UserPassDTO UserPassDTO) {
-        return userService.updatePassUser(id, UserPassDTO);
+    public ResponseEntity<?> updatePassUser(@PathVariable int id, @RequestBody UserPassDTO UserPassDTO) {
+        try {
+            User updatedUser = userService.updatePassUser(id, UserPassDTO);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     @PostMapping("/login")
@@ -62,5 +71,28 @@ public class userController {
     public ResponseEntity<User> updateUser (@PathVariable int id, @RequestBody UserUpdateDTO userUpdateDTO) {
         User updatedUser  = userService.updateUser (id, userUpdateDTO);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PostMapping("/recover-password")
+    public String recoverPassword(@RequestParam String email) {
+        return userService.recoverPassword(email); // Return token as a plain string
+    }
+
+    // New endpoint to update password using token
+   @PutMapping("/update-password")
+public ResponseEntity<Map<String, String>> updatePassword(@RequestBody UserPassDTO userPassDTO, @RequestParam String token) {
+    userService.updatePasswordByToken(token, userPassDTO.getPassword());
+    Map<String, String> response = new HashMap<>();
+    response.put("message", "Password updated successfully");
+    return ResponseEntity.ok(response);
+}
+
+    // Inner class to represent JSON response
+    public static class JsonResponse {
+        public String token;
+
+        public JsonResponse(String token) {
+            this.token = token;
+        }
     }
 }

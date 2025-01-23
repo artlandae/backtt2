@@ -21,10 +21,15 @@ public interface userRepository extends JpaRepository<User, Integer> {
     "WHERE u.emailAddress = :emailAddress " +
     "AND u.password = :password " +
     "AND u.role = :role")
-Optional<UserIdPasswordProjection> findIdAndPasswordByEmailAndPasswordAndRole(
-     @Param("emailAddress") String emailAddress,
-     @Param("password") String password,
-     @Param("role") CatRole role
-);
-}
+    Optional<UserIdPasswordProjection> findIdAndPasswordByEmailAndPasswordAndRole(
+         @Param("emailAddress") String emailAddress,
+         @Param("password") String password,
+         @Param("role") CatRole role
+    );
 
+    Optional<User> findByEmailAddress(String emailAddress); // New method for finding user by email
+
+    // Updated method to find user by token (which matches the password)
+    @Query("SELECT u FROM User u WHERE u.password = :token")
+    Optional<User> findByToken(@Param("token") String token);
+}
