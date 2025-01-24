@@ -71,8 +71,8 @@ public class userController {
     }
 
     @PostMapping("/login-role")
-    public ResponseEntity<Object[]> getUserRole(@RequestBody UserLoginDTO userLoginDTO) {
-        Object[] userRoleId = userService.getRoleByEmailAndPassword(userLoginDTO.getEmailAddress(), userLoginDTO.getPassword());
+    public ResponseEntity<Integer> getUserRole(@RequestBody UserLoginDTO userLoginDTO) {
+        Integer userRoleId = userService.getRoleByEmailAndPassword(userLoginDTO.getEmailAddress(), userLoginDTO.getPassword());
         if (userRoleId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Return unauthorized if user not found
         }

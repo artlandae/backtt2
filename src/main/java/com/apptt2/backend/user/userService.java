@@ -90,7 +90,7 @@ public class userService {
         .orElseThrow(() -> new RuntimeException("Usuario no encontrado con las credenciales y rol especificados."));
     }
 
-    public Object[] getRoleByEmailAndPassword(String emailAddress, String password) {
+    public Integer getRoleByEmailAndPassword(String emailAddress, String password) {
         return userRepository.findRoleByEmailAndPassword(emailAddress, password)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado con las credenciales especificadas."));
     }
