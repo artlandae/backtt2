@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,6 @@ public class userController {
         return userService.getAllUsers();
     }
 
-    // Endpoint para obtener un usuario por su ID
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
         return userService.getUserById(id);
@@ -44,16 +44,15 @@ public class userController {
         return userService.updateUser(id, userUpdateHelpDTO);
     }
 
-    // Endpoint para crear un nuevo usuario
     @PostMapping("/create")
     public User createUser(@RequestBody UserCreateDTO userCreateDTO) {
         return userService.createUser(userCreateDTO);
     }
 
     @PutMapping("/updatepass/{id}")
-    public ResponseEntity<?> updatePassUser(@PathVariable int id, @RequestBody UserPassDTO UserPassDTO) {
+    public ResponseEntity<?> updatePassUser(@PathVariable int id, @RequestBody UserPassDTO userPassDTO) {
         try {
-            User updatedUser = userService.updatePassUser(id, UserPassDTO);
+            User updatedUser = userService.updatePassUser(id, userPassDTO);
             return ResponseEntity.ok(updatedUser);
         } catch (IllegalArgumentException e) {
             Map<String, String> response = new HashMap<>();
@@ -63,8 +62,23 @@ public class userController {
     }
 
     @PostMapping("/login")
-    public UserIdPasswordProjection getUserIdAndPassword(@RequestBody UserLoginDTO userLoginDTO) {
-        return userService.getIdAndPasswordByEmailAndPassword(userLoginDTO.getEmailAddress(), userLoginDTO.getPassword());
+    public ResponseEntity<UserIdPasswordProjection> getUserIdAndPassword(@RequestBody UserLoginDTO userLoginDTO) {
+        UserIdPasswordProjection userIdPassword = userService.getIdAndPasswordByEmailAndPassword(userLoginDTO.getEmailAddress(), userLoginDTO.getPassword());
+        if (userIdPassword == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        return ResponseEntity.ok(userIdPassword);
+    }
+
+    @PostMapping("/login-role")
+    public ResponseEntity<Object[]> getUserRole(@RequestBody UserLoginDTO userLoginDTO) {
+        Object[] userRoleId = userService.getRoleByEmailAndPassword(userLoginDTO.getEmailAddress(), userLoginDTO.getPassword());
+        if (userRoleId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Return unauthorized if user not found
+        }
+        // Map<String, Integer> response = new HashMap<>();
+        // response.put("id_role", userRoleId);
+        return ResponseEntity.ok(userRoleId);
     }
 
     @PutMapping("/updateUser/{id}")
@@ -75,19 +89,17 @@ public class userController {
 
     @PostMapping("/recover-password")
     public String recoverPassword(@RequestParam String email) {
-        return userService.recoverPassword(email); // Return token as a plain string
+        return userService.recoverPassword(email);
     }
 
-    // New endpoint to update password using token
-   @PutMapping("/update-password")
-public ResponseEntity<Map<String, String>> updatePassword(@RequestBody UserPassDTO userPassDTO, @RequestParam String token) {
-    userService.updatePasswordByToken(token, userPassDTO.getPassword());
-    Map<String, String> response = new HashMap<>();
-    response.put("message", "Password updated successfully");
-    return ResponseEntity.ok(response);
-}
+    @PutMapping("/update-password")
+    public ResponseEntity<Map<String, String>> updatePassword(@RequestBody UserPassDTO userPassDTO, @RequestParam String token) {
+        userService.updatePasswordByToken(token, userPassDTO.getPassword());
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Password updated successfully");
+        return ResponseEntity.ok(response);
+    }
 
-    // Inner class to represent JSON response
     public static class JsonResponse {
         public String token;
 

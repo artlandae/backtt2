@@ -22,7 +22,7 @@ public class User {
     private CatRole role;
 
     private String emailAddress;
-    private String password;
+    private String password; // Storing plain text password
     private String name;
     private String secondName;
     private String lastName;
