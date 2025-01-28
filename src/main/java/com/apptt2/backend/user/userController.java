@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import java.time.Duration;
+import org.springframework.http.MediaType;
 
 @RestController
 @CrossOrigin()
@@ -34,9 +37,14 @@ public class userController {
         return userService.getUserById(id);
     }
 
-    @GetMapping("/status")
-    public List<UserStatus> getUserBystatus() {
-        return userService.findBystatus();
+    // @GetMapping("/status")
+    // public List<UserStatus> getUserBystatus() {
+    //     return userService.findBystatus();
+    // }
+    @GetMapping(value = "/status", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<List<UserStatus>> getUserBystatus() {
+        return Flux.interval(Duration.ofSeconds(5)) // Emitir datos cada 5 segundos
+                   .map(sequence -> userService.findBystatus()); // Llamar al servicio para obtener la lista actualizada
     }
 
     @PutMapping("/update/{id}")
