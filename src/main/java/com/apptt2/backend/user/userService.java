@@ -9,6 +9,7 @@ import com.apptt2.backend.cat_role.catRoleRepository;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +44,7 @@ public class userService {
             user.setStatus(userUpdateHelpDTO.getStatus());
             user.setLatitud(userUpdateHelpDTO.getLatitud());
             user.setLenght(userUpdateHelpDTO.getLongitud());
+            user.setDate(new Date()); // Set current date
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con el ID: " + id));
     }

@@ -42,10 +42,12 @@ public class userController {
     //     return userService.findBystatus();
     // }
     @GetMapping(value = "/status", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<List<UserStatus>> getUserBystatus() {
-        return Flux.interval(Duration.ofSeconds(5)) // Emitir datos cada 5 segundos
-                   .map(sequence -> userService.findBystatus()); // Llamar al servicio para obtener la lista actualizada
+    public Flux<List<UserStatus>> getUserStatus() {
+        return Flux.interval(Duration.ofSeconds(2)) // Emitir datos cada 2 segundos
+                   .map(sequence -> userService.findBystatus())
+                   .doOnError(error -> System.out.println("Error en SSE: " + error.getMessage()));
     }
+    
 
     @PutMapping("/update/{id}")
     public User updateUser(@PathVariable int id, @RequestBody UserUpdateHelpDTO userUpdateHelpDTO) {
