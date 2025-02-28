@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,9 +14,19 @@ public interface userRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u.role.id AS password FROM User u WHERE u.emailAddress = :emailAddress AND u.password = :password")
     Optional<Integer> findRoleByEmailAndPassword(@Param("emailAddress") String emailAddress, @Param("password") String password);
 
-    // Other existing methods...
-    @Query("SELECT u.id AS id, u.name AS name, u.cellPhone AS cellPhone, u.auxiliaryCellPhone AS auxiliaryCellPhone FROM User u WHERE u.status = 'true'")
-    List<UserStatus> findBystatus();
+
+    @Query("SELECT u.id AS id, u.name AS name, u.cellPhone AS cellPhone, u.auxiliaryCellPhone AS auxiliaryCellPhone, u.date AS date FROM User u WHERE u.status = 'true' ")
+    List<UserStatus> findByallstatus();
+
+@Query("SELECT u.id AS id, u.name AS name, u.cellPhone AS cellPhone, u.auxiliaryCellPhone AS auxiliaryCellPhone, u.date AS date " +
+       "FROM User u " +
+       "WHERE u.status = 'true' " + 
+       "AND u.date >= :startDate " +
+       "AND u.date < :endDate")
+List<UserStatus> findBystatus(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
+
 
     @Query("SELECT u.id AS id, u.password AS password " +
     "FROM User u " +

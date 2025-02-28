@@ -8,10 +8,13 @@ import com.apptt2.backend.cat_role.CatRole;
 import com.apptt2.backend.cat_role.catRoleRepository;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class userService {
@@ -29,8 +32,28 @@ public class userService {
         return userRepository.findAll();
     }
 
+    // public List<UserStatus> findBystatus() {
+    //     return userRepository.findBystatus();
+    // }
+
+    public List<UserStatus> findByAllstatus() {
+        
+        List<UserStatus> statuses = userRepository.findByallstatus();
+        return statuses.stream()
+            .sorted((s1, s2) -> s2.getDate().compareTo(s1.getDate())) // Sort by date descending
+            .collect(Collectors.toList());
+    }
+
     public List<UserStatus> findBystatus() {
-        return userRepository.findBystatus();
+
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        System.out.println(startOfDay);
+        System.out.println(endOfDay);
+        List<UserStatus> statuses = userRepository.findBystatus(startOfDay, endOfDay);
+        return statuses.stream()
+            .sorted((s1, s2) -> s2.getDate().compareTo(s1.getDate())) // Sort by date descending
+            .collect(Collectors.toList());
     }
 
     public User getUserById(int id) {
@@ -45,6 +68,7 @@ public class userService {
             user.setLatitud(userUpdateHelpDTO.getLatitud());
             user.setLenght(userUpdateHelpDTO.getLongitud());
             user.setDate(new Date()); // Set current date
+            System.out.println(user.getDate());
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con el ID: " + id));
     }
@@ -184,6 +208,14 @@ public class userService {
         user.setPassword(newPassword); // Store plain text new password
         userRepository.save(user); // Save updated user
     }
+
+    @Transactional
+    public void deleteUser(int id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado con el ID: " + id));
+        userRepository.delete(user);
+    }
+
 
     private String generateRandomToken() {
         SecureRandom random = new SecureRandom();
